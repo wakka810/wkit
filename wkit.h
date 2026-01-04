@@ -150,6 +150,8 @@ CP_INLINE bool is_square_u64(ull x){ull r=isqrt_u64(x); return (unsigned __int12
 CP_INLINE int cmp_ll(const void*a,const void*b){ll x=*(const ll*)a,y=*(const ll*)b; return x<y?-1:x>y;}
 CP_INLINE int cmp_int(const void*a,const void*b){int x=*(const int*)a,y=*(const int*)b; return x<y?-1:x>y;}
 CP_INLINE int cmp_u64(const void*a,const void*b){ull x=*(const ull*)a,y=*(const ull*)b; return x<y?-1:x>y;}
+CP_INLINE int cmp_pairll(const void*a,const void*b){const PairLL*p=(const PairLL*)a,*q=(const PairLL*)b;if(p->a!=q->a)return p->a<q->a?-1:1;return p->b<q->b?-1:p->b>q->b;}
+CP_INLINE int cmp_pairll_ab(const void*a,const void*b){const PairLL*p=(const PairLL*)a,*q=(const PairLL*)b;if(p->a!=q->a)return p->a<q->a?-1:1;return p->b>q->b?-1:p->b<q->b;}
 CP_INLINE int lower_bound_ll(const ll*a,int n,ll x){int l=0,r=n; while(l<r){int m=(l+r)>>1; if(a[m]<x) l=m+1; else r=m;} return l;}
 CP_INLINE int upper_bound_ll(const ll*a,int n,ll x){int l=0,r=n; while(l<r){int m=(l+r)>>1; if(a[m]<=x) l=m+1; else r=m;} return l;}
 CP_INLINE int unique_ll(ll*a,int n){if(n<=0) return 0; int m=1; for(int i=1;i<n;i++) if(a[i]!=a[m-1]) a[m++]=a[i]; return m;}
