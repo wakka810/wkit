@@ -417,10 +417,10 @@ CP_INLINE MatN matn_alloc(int n){MatN a;a.n=n;a.m=(ll**)xmalloc((size_t)n*sizeof
 CP_INLINE void matn_free(MatN*a){for(int i=0;i<a->n;i++)free(a->m[i]);free(a->m);a->m=NULL;a->n=0;}
 CP_INLINE MatN matn_mul(MatN a,MatN b,ll mod){int n=a.n;MatN c=matn_alloc(n);for(int i=0;i<n;i++)for(int k=0;k<n;k++)if(a.m[i][k])for(int j=0;j<n;j++)c.m[i][j]=(c.m[i][j]+(__int128)a.m[i][k]*b.m[k][j])%mod;return c;}
 CP_INLINE MatN matn_pow(MatN a,ll e,ll mod){int n=a.n;MatN r=matn_alloc(n);for(int i=0;i<n;i++)r.m[i][i]=1;while(e){if(e&1){MatN t=matn_mul(r,a,mod);matn_free(&r);r=t;}MatN t=matn_mul(a,a,mod);matn_free(&a);a=t;e>>=1;}matn_free(&a);return r;}
-static const int dx4[]={0,1,0,-1};
-static const int dy4[]={1,0,-1,0};
-static const int dx8[]={0,1,1,1,0,-1,-1,-1};
-static const int dy8[]={1,1,0,-1,-1,-1,0,1};
+static const int dx4[]__attribute__((unused))={0,1,0,-1};
+static const int dy4[]__attribute__((unused))={1,0,-1,0};
+static const int dx8[]__attribute__((unused))={0,1,1,1,0,-1,-1,-1};
+static const int dy8[]__attribute__((unused))={1,1,0,-1,-1,-1,0,1};
 #define IN_GRID(r,c,H,W) ((r)>=0&&(r)<(H)&&(c)>=0&&(c)<(W))
 CP_INLINE int grid_idx(int r,int c,int W){return r*W+c;}
 CP_INLINE int msb_pos(ull x){return x?63-__builtin_clzll(x):-1;}
