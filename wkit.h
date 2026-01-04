@@ -1,9 +1,7 @@
 #ifndef WKIT_H
 #define WKIT_H
 #ifndef _WIN32
-#ifndef _POSIX_C_SOURCE
-#define _POSIX_C_SOURCE 200809L
-#endif
+#define _GNU_SOURCE
 #endif
 #include <stdio.h>
 #include <stdlib.h>
@@ -290,11 +288,7 @@ CP_INLINE void graphd_reserve(Graph*g,int need){if(g->mcap>=need) return; while(
 CP_INLINE void graphd_add_edge(Graph*g,int u,int v,ll w){if(g->m+1>g->mcap) graphd_reserve(g,g->m+1); int e=g->m++; g->to[e]=v; g->w[e]=w; g->nxt[e]=g->head[u]; g->head[u]=e; g->indeg[v]++;}
 CP_INLINE void graphd_add_undirected(Graph*g,int u,int v,ll w){graphd_add_edge(g,u,v,w); graphd_add_edge(g,v,u,w);} 
 #ifndef CP_DISABLE_SCC
-CP_INLINE int scc_kosaraju(const Graph*g,int*comp){int n=g->n; Graph rg; graphd_init(&rg,n,g->m); for(int u=0;u<n;u++) for(int e=g->head[u];e!=-1;e=g->nxt[e]) graphd_add_edge(&rg,g->to[e],u,0);
-unsigned char*vis=(unsigned char*)xcalloc((size_t)n,1); int*order=(int*)xmalloc((size_t)n*sizeof(int)); int ord=0; int*st_v=(int*)xmalloc((size_t)n*sizeof(int)); int*st_e=(int*)xmalloc((size_t)n*sizeof(int));
-for(int s=0;s<n;s++) if(!vis[s]){int top=0; vis[s]=1; st_v[top]=s; st_e[top]=g->head[s]; top++; while(top){int u=st_v[top-1]; int e=st_e[top-1]; if(e!=-1){st_e[top-1]=g->nxt[e]; int v=g->to[e]; if(!vis[v]){vis[v]=1; st_v[top]=v; st_e[top]=g->head[v]; top++;}} else {order[ord++]=u; top--;}}}
-for(int i=0;i<n;i++) comp[i]=-1; int grp=0; for(int idx=n-1;idx>=0;idx--){int s=order[idx]; if(comp[s]!=-1) continue; int top=0; st_v[top++]=s; comp[s]=grp; while(top){int u=st_v[--top]; for(int e=rg.head[u];e!=-1;e=rg.nxt[e]){int v=rg.to[e]; if(comp[v]==-1){comp[v]=grp; st_v[top++]=v;}}} grp++;}
-for(int v=0;v<n;v++) comp[v]=grp-1-comp[v]; free(vis); free(order); free(st_v); free(st_e); graphd_free(&rg); return grp;}
+CP_INLINE int scc_kosaraju(const Graph*g,int*comp){int n=g->n; Graph rg; graphd_init(&rg,n,g->m); for(int u=0;u<n;u++) for(int e=g->head[u];e!=-1;e=g->nxt[e]) graphd_add_edge(&rg,g->to[e],u,0); unsigned char*vis=(unsigned char*)xcalloc((size_t)n,1); int*order=(int*)xmalloc((size_t)n*sizeof(int)); int ord=0; int*st_v=(int*)xmalloc((size_t)n*sizeof(int)); int*st_e=(int*)xmalloc((size_t)n*sizeof(int)); for(int s=0;s<n;s++) if(!vis[s]){int top=0; vis[s]=1; st_v[top]=s; st_e[top]=g->head[s]; top++; while(top){int u=st_v[top-1]; int e=st_e[top-1]; if(e!=-1){st_e[top-1]=g->nxt[e]; int v=g->to[e]; if(!vis[v]){vis[v]=1; st_v[top]=v; st_e[top]=g->head[v]; top++;}} else {order[ord++]=u; top--;}}}; for(int i=0;i<n;i++){comp[i]=-1;} int grp=0; for(int idx=n-1;idx>=0;idx--){int s=order[idx]; if(comp[s]!=-1) continue; int top=0; st_v[top++]=s; comp[s]=grp; while(top){int u=st_v[--top]; for(int e=rg.head[u];e!=-1;e=rg.nxt[e]){int v=rg.to[e]; if(comp[v]==-1){comp[v]=grp; st_v[top++]=v;}}} grp++;}; for(int v=0;v<n;v++){comp[v]=grp-1-comp[v];} free(vis); free(order); free(st_v); free(st_e); graphd_free(&rg); return grp;}
 #endif
 #if !defined(CP_DISABLE_TWOSAT) && !defined(CP_DISABLE_SCC)
 typedef struct{int n; Graph g;} TwoSAT;
@@ -513,7 +507,7 @@ typedef struct TrNode{int pri,sz;ll val,sum,lz;struct TrNode *l,*r;}TrNode;
 CP_INLINE int tr_cnt(TrNode*t){return t?t->sz:0;}
 CP_INLINE ll tr_sum(TrNode*t){return t?t->sum:0;}
 CP_INLINE void tr_upd(TrNode*t){if(t){t->sz=1+tr_cnt(t->l)+tr_cnt(t->r);t->sum=t->val+tr_sum(t->l)+tr_sum(t->r);}}
-CP_INLINE void tr_push(TrNode*t){}
+CP_INLINE void tr_push(TrNode*t){(void)t;}
 CP_INLINE void tr_split(TrNode*t,int k,TrNode**l,TrNode**r){if(!t){*l=*r=NULL;return;}tr_push(t);if(k<=tr_cnt(t->l)){tr_split(t->l,k,l,&t->l);*r=t;}else{tr_split(t->r,k-1-tr_cnt(t->l),&t->r,r);*l=t;}tr_upd(t);}
 CP_INLINE void tr_merge(TrNode**t,TrNode*l,TrNode*r){if(!l||!r)*t=l?l:r;else if(l->pri>r->pri){tr_push(l);tr_merge(&l->r,l->r,r);*t=l;}else{tr_push(r);tr_merge(&r->l,l,r->l);*t=r;}tr_upd(*t);}
 CP_INLINE TrNode*tr_new(ll v){TrNode*n=(TrNode*)xcalloc(1,sizeof(TrNode));n->pri=rand();n->sz=1;n->val=n->sum=v;return n;}
